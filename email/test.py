@@ -4,7 +4,17 @@ from email.parser import Parser
 from email.header import decode_header
 from email.utils import parseaddr
 import poplib
+import os
+import openpyxl
 
+def del_null_row(filename):
+    r_file = open(filename,"r")
+    lines = r_file.readlines()
+    r_file.close()
+    for idx,line in enumerate(lines):
+        if line.split():
+            print(idx,line)
+    r_file.close()
 
 
 def decode_str(s):
@@ -40,19 +50,23 @@ def print_info(msg, indent=0):
     if (msg.is_multipart()):        #is_multipart()就是用来判断是否是垃圾邮件，如果是垃圾邮件就返回True，否则返回False
         parts = msg.get_payload()
         for n, part in enumerate(parts):
-            print('%spart %s' % ('  ' * indent, n))
-            print('%s--------------------' % ('  ' * indent))
+            # print('%spart %s' % ('  ' * indent, n))
+            # print('%s--------------------' % ('  ' * indent))
             print_info(part, indent + 1)
     else:
         content_type = msg.get_content_type()
-        if content_type=='text/plain' or content_type=='text/html':
+        if content_type=='text/plain' :                 #or content_type=='text/html'      ##HTML格式输出
             content = msg.get_payload(decode=True)
             charset = guess_charset(msg)
             if charset:
                 content = content.decode(charset)
-            print('%sText: %s' % ('  ' * indent, content + '...'))
+            # print('%sText: %s' % ('  ' * indent, content + '...'))
+            with open('D:\pycharm\email\clean_up.txt','wt') as f:
+                f.write(content)
+
         else:
-            print('%sAttachment: %s' % ('  ' * indent, content_type))
+            pass
+            # print('%sAttachment: %s' % ('  ' * indent, content_type))
 
 if __name__ == "__main__":
 
@@ -60,12 +74,13 @@ if __name__ == "__main__":
     # email = input('Email: ')
     # password = input('Password: ')
     # pop3_server = input('POP3 server: ')
-    email = 'jacob_dayby'
-    password = 'gm12345'
-    pop3_server = 'pop.sina.com'
+
+    email = 'jacob_dayby@outlook.com'
+    password = 'huawei123..'
+    pop3_server = 'pop-mail.outlook.com'
 
     # 连接到POP3服务器:
-    server = poplib.POP3(pop3_server)
+    server = poplib.POP3_SSL(pop3_server,'995')
     # 可以打开或关闭调试信息:
     server.set_debuglevel(1)
     # 可选:打印POP3服务器的欢迎文字:
@@ -98,3 +113,8 @@ if __name__ == "__main__":
     # server.dele(index)
     # 关闭连接:
     server.quit()
+
+
+    with open('D:\pycharm\email\clean_up.txt','r') as f:
+        Test = f.read()
+        print(str(Test).strip('\n'))
