@@ -8,12 +8,12 @@ import os
 import openpyxl
 
 def del_null_row(filename):
-    r_file = open(filename,"r")
+    r_file = open(filename,"rt")
     lines = r_file.readlines()
     r_file.close()
     for idx,line in enumerate(lines):
         if line.split():
-            print(idx,line)
+            print(line)
     r_file.close()
 
 
@@ -61,14 +61,17 @@ def print_info(msg, indent=0):
             if charset:
                 content = content.decode(charset)
             # print('%sText: %s' % ('  ' * indent, content + '...'))
-            with open('D:\pycharm\email\clean_up.txt','wt') as f:
+            with open('clean_up_dir','wt') as f:
                 f.write(content)
+                f.close()
 
         else:
             pass
             # print('%sAttachment: %s' % ('  ' * indent, content_type))
 
 if __name__ == "__main__":
+
+    clean_up_dir = '''C:\\notepad++\pycharm2\email\clean_up.txt'''
 
     # 输入邮件地址, 口令和POP3服务器地址:
     # email = input('Email: ')
@@ -114,7 +117,11 @@ if __name__ == "__main__":
     # 关闭连接:
     server.quit()
 
+    print("hello world")
 
-    with open('D:\pycharm\email\clean_up.txt','r') as f:
-        Test = f.read()
-        print(str(Test).strip('\n'))
+    print(clean_up_dir)
+    del_null_row(clean_up_dir)
+    # with open('clean_up_dir','r') as f:
+    #     Test = f.read()
+    #     del_null_row(Test)
+    #     print(str(Test).strip('\n'))
