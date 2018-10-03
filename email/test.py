@@ -20,7 +20,6 @@ def del_null_row(filepath):
     fnew.close()
 
 
-
 def decode_str(s):
     value, charset = decode_header(s)[0]
     if charset:
@@ -50,7 +49,7 @@ def print_info(msg, indent=0):
                     hdr, addr = parseaddr(value)
                     name = decode_str(hdr)
                     value = u'%s <%s>' % (name, addr)
-            print('%s%s: %s' % ('  ' * indent, header, value))
+            # print('%s%s: %s' % ('  ' * indent, header, value))
     if (msg.is_multipart()):        #is_multipart()就是用来判断是否是垃圾邮件，如果是垃圾邮件就返回True，否则返回False
         parts = msg.get_payload()
         for n, part in enumerate(parts):
@@ -64,10 +63,11 @@ def print_info(msg, indent=0):
             charset = guess_charset(msg)
             if charset:
                 content = content.decode(charset)
-            # print('%sText: %s' % ('  ' * indent, content + '...'))
-            with open(filename,'wt') as f:
-                f.write(content)
-                f.close()
+            print('%sText: %s' % ('  ' * indent, content + '...'))
+            if 'CNY' in str(content) and '手续费' in str(content) and '支付成功' in str(content):
+                with open(filename,'w') as f:
+                    f.write(content + '\n')
+                    f.close()
 
         else:
             pass
@@ -105,24 +105,25 @@ if __name__ == "__main__":
     # print(resp)             #总邮件数量和大小， # 可以查看b'+OK 6 311323'
     # print(mails)            #每个邮件的大小，# 可以查看返回的列表类似[b'1 82923', b'2 2184', ...]
 
-    # # 获取最新一封邮件, 注意索引号从1开始:
-    # index = len(mails)
-    # print(index)
-    # for i in range(index):
-    #     print(i + 1)
-    #     resp, lines, octets = server.retr(index)
-    #
-    #     # lines存储了邮件的原始文本的每一行,
-    #     # 可以获得整个邮件的原始文本:
-    #     msg_content = b'\r\n'.join(lines).decode('utf-8')
-    #     # print(msg_content)
-    #     # 稍后解析出邮件:
-    #     msg = Parser().parsestr(msg_content)
-    #
-    #     print_info(msg)
-    #     # 可以根据邮件索引号直接从服务器删除邮件:
-    #     # server.dele(index)
-    #     # 关闭连接:
-    #     server.quit()
-    #
-    #     del_null_row(filename)
+    # 获取最新一封邮件, 注意索引号从1开始:
+    index = len(mails)
+    print(index)
+    for i in range(index):
+        print(i + 1)
+        resp, lines, octets = server.retr(i + 1)
+
+        # lines存储了邮件的原始文本的每一行,
+        # 可以获得整个邮件的原始文本:
+        msg_content = b'\r\n'.join(lines).decode('utf-8')
+        # print(msg_content)
+        # 稍后解析出邮件:
+        msg = Parser().parsestr(msg_content)
+
+        print_info(msg)
+        # 可以根据邮件索引号直接从服务器删除邮件:
+        # server.dele(index)
+
+        # del_null_row(filename)
+
+    # 关闭连接:
+    server.quit()
