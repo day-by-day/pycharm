@@ -7,14 +7,18 @@ import poplib
 import os
 import openpyxl
 
-def del_null_row(filename):
-    r_file = open(filename,"rt")
-    lines = r_file.readlines()
-    r_file.close()
-    for idx,line in enumerate(lines):
-        if line.split():
-            print(line)
-    r_file.close()
+def del_null_row(filepath):
+    print(filepath)
+    f=open(filepath,'r')
+    fnew=open(filepath+'_new.txt','w+')            # 将结果存入新的文本中
+    for line in f.readlines():
+        data= str(line.strip())
+        if len(data)!=0:
+            fnew.write(data)
+            fnew.write('\n')
+    f.close()
+    fnew.close()
+
 
 
 def decode_str(s):
@@ -61,7 +65,7 @@ def print_info(msg, indent=0):
             if charset:
                 content = content.decode(charset)
             # print('%sText: %s' % ('  ' * indent, content + '...'))
-            with open('clean_up_dir','wt') as f:
+            with open(filename,'wt') as f:
                 f.write(content)
                 f.close()
 
@@ -71,7 +75,7 @@ def print_info(msg, indent=0):
 
 if __name__ == "__main__":
 
-    clean_up_dir = '''C:\\notepad++\pycharm2\email\clean_up.txt'''
+    filename = 'D:\pycharm\email\get_email_content.txt'
 
     # 输入邮件地址, 口令和POP3服务器地址:
     # email = input('Email: ')
@@ -93,35 +97,32 @@ if __name__ == "__main__":
     server.user(email)
     server.pass_(password)
 
-    # stat()返回邮件数量和占用空间:
-    # print('Messages: %s. Size: %s' % server.stat())
+    # stat()返回所有邮件数量和占用空间:
+    print('Messages: %s. Size: %s' % server.stat())
+
     # list()返回所有邮件的编号:
     resp, mails, octets = server.list()
-    # 可以查看返回的列表类似[b'1 82923', b'2 2184', ...]
-    # print(mails)
+    # print(resp)             #总邮件数量和大小， # 可以查看b'+OK 6 311323'
+    # print(mails)            #每个邮件的大小，# 可以查看返回的列表类似[b'1 82923', b'2 2184', ...]
 
-    # 获取最新一封邮件, 注意索引号从1开始:
-    index = len(mails)
-    resp, lines, octets = server.retr(index)
-
-    # lines存储了邮件的原始文本的每一行,
-    # 可以获得整个邮件的原始文本:
-    msg_content = b'\r\n'.join(lines).decode('utf-8')
-    # print(msg_content)
-    # 稍后解析出邮件:
-    msg = Parser().parsestr(msg_content)
-
-    print_info(msg)
-    # 可以根据邮件索引号直接从服务器删除邮件:
-    # server.dele(index)
-    # 关闭连接:
-    server.quit()
-
-    print("hello world")
-
-    print(clean_up_dir)
-    del_null_row(clean_up_dir)
-    # with open('clean_up_dir','r') as f:
-    #     Test = f.read()
-    #     del_null_row(Test)
-    #     print(str(Test).strip('\n'))
+    # # 获取最新一封邮件, 注意索引号从1开始:
+    # index = len(mails)
+    # print(index)
+    # for i in range(index):
+    #     print(i + 1)
+    #     resp, lines, octets = server.retr(index)
+    #
+    #     # lines存储了邮件的原始文本的每一行,
+    #     # 可以获得整个邮件的原始文本:
+    #     msg_content = b'\r\n'.join(lines).decode('utf-8')
+    #     # print(msg_content)
+    #     # 稍后解析出邮件:
+    #     msg = Parser().parsestr(msg_content)
+    #
+    #     print_info(msg)
+    #     # 可以根据邮件索引号直接从服务器删除邮件:
+    #     # server.dele(index)
+    #     # 关闭连接:
+    #     server.quit()
+    #
+    #     del_null_row(filename)
